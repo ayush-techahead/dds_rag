@@ -1,0 +1,29 @@
+# Information Packet for Individuals & Families : CA Department of Developmental Services
+
+**Source:** [https://www.dds.ca.gov/individuals-and-families/new-information-packet/](https://www.dds.ca.gov/individuals-and-families/new-information-packet/)
+
+---
+
+The Department of Developmental Services, with input from the community, has made two new packets of information for individuals and their families who are starting the intake process, or other people want to learn more about California’s regional center system.
+
+You can get these packets in different languages and formats below.
+
+Early Start Standardized Information Packet – For Children Aged 0-3
+
+  * **[English](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_English.pdf>)** | [Spanish](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_SP.pdf>) | [Arabic](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Arabic-1.pdf>) | [Armenian](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Armenian-1.pdf>) | [Cambodian (Khmer)](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Cambodian-Khmer-1.pdf>) | [Chinese (Simplified)](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_SC.pdf>) | [Chinese (Traditional)](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_TC.pdf>) | [Dari](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Dari-1.pdf>) | [Farsi](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Farsi-1.pdf>) | [Hindi](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Hindi-1.pdf>) | [Hmong](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Hmong-1.pdf>) | [Japanese](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Japanese-1.pdf>) | [Korean](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_KO.pdf>) | [Lao](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Lao-1.pdf>) | [Mien](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Mien-1.pdf>) | [Portuguese](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Portuguese-1.pdf>) | [Russian](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Russian-1.pdf>) | [Tagalog](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_TL.pdf>) | [Urdu](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_Urdu-1.pdf>) | [Vietnamese](<https://www.dds.ca.gov/wp-content/uploads/2026/01/Early_Start_Information_Packet_August2025_VI.pdf>)
+
+This packet is focused on Early Start and is for parents and other caregivers of infants and toddlers who may have, or are at risk to have, developmental delays or disabilities. This packet provides details about the regional center system, resources, consumer rights and other information about how to become eligible for services.
+
+A Guide to California’s Regional Center System & the Lanterman Act – For Individuals Aged 3-Adult
+
+This packet has information about the Lanterman Services Act. It’s for individuals, parents and caregivers of children or adults over 3 years old who may have or are at risk of having developmental delays or disabilities. This packet is also for people who want to learn more about the regional center system, resources, rights and how to qualify for services.
+
+  * [English](<https://www.dds.ca.gov/wp-content/uploads/2025/02/Guide_to_Californias_Regional_Center_Services_System.pdf>)| [Spanish](<https://www.dds.ca.gov/wp-content/uploads/2025/03/Guide_to_Californias_Regional_Center_System_SP.pdf>) | [Arabic](<https://www.dds.ca.gov/wp-content/uploads/2025/12/Guide_to_Californias_Regional_Center_System_AR.pdf>) | [Armenian](<https://www.dds.ca.gov/wp-content/uploads/2025/12/Guide_to_Californias_Regional_Center_System_HY.pdf>) | [Chinese (Simplified)](<https://www.dds.ca.gov/wp-content/uploads/2025/03/Guide_to_Californias_Regional_Center_System_SC.pdf>) | [Chinese (Traditional)](<https://www.dds.ca.gov/wp-content/uploads/2025/03/Guide_to_Californias_Regional_Center_System_TC.pdf>) | [Farsi](<https://www.dds.ca.gov/wp-content/uploads/2025/12/Guide_to_Californias_Regional_Center_System_FA.pdf>) | [Hmong](<https://www.dds.ca.gov/wp-content/uploads/2025/12/Guide_to_Californias_Regional_Center_System_HMV.pdf>) | [Japanese](<https://www.dds.ca.gov/wp-content/uploads/2026/05/AGuideCARCServicesSystem_20260508-Japanese.pdf>) | [Korean](<https://www.dds.ca.gov/wp-content/uploads/2025/03/Guide_to_Californias_Regional_Center_System_KO.pdf>) | [Russian](<https://www.dds.ca.gov/wp-content/uploads/2025/12/Guide_to_Californias_Regional_Center_System_RU.pdf>) | [Tagalog](<https://www.dds.ca.gov/wp-content/uploads/2025/03/Guide_to_Californias_Regional_Center_System_TL.pdf>) | [Vietnamese](<https://www.dds.ca.gov/wp-content/uploads/2025/03/Guide_to_Californias_Regional_Center_System_VI.pdf>)
+
+![A photo of a Hispanic family in their living room, hugging, smiling and laughing. There is a blue couch and globe chandelier behind them and a stone fireplace to their left. There is a father who is wearing a white polo shirt and jeans. A mother wearing a denim dress. A teenage daughter wearing a floral shirt. A younger daughter wearing a pink dress. A son wearing a grey sweatshirt.](https://www.dds.ca.gov/wp-content/uploads/2025/02/Information_Packet_Website_Update-700x466.jpg)
+
+  
+
+Share 
+
+Last modified: May 8, 2026

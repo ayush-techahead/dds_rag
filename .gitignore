@@ -1,0 +1,10 @@
+.DS_Store
+
+# Local runtime secrets
+backend/.env
+frontend/.env
+deploy/.env
+
+# Generated deployment seed artifacts
+deploy/seed/*
+!deploy/seed/.gitkeep

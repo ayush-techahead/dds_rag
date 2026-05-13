@@ -1,0 +1,13 @@
+# Rate Reform Progress: Directives to Regional Centers : CA Department of Developmental Services
+
+**Source:** [https://www.dds.ca.gov/newsletter/rate-reform-progress-directives-to-regional-centers/](https://www.dds.ca.gov/newsletter/rate-reform-progress-directives-to-regional-centers/)
+
+---
+
+The Department continues to release directives ahead of rate reform adjustments effective January 2025. [Rate reform](<https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.dds.ca.gov%2Frc%2Fvendor-provider%2Frate-reform&data=05%7C02%7CKrystyne.McComb%40dds.ca.gov%7C28cd71c2f6f84e7a729a08dd042a59d0%7C7cfc5487eae84559b408d4e67432d3d2%7C0%7C0%7C638671302125395608%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=I1pfGjUhza1ERbVDDn7cnwRLNZG%2BEX8al5xpuEmbFpY%3D&reserved=0>) in California’s developmental services system means changing the way the State pays for services. The directives provide regional centers and service providers with guidance and steps to prepare for and make changes. The directives already released are listed on the [rate reform directives](<https://www.dds.ca.gov/rc/vendor-provider/rate-reform/directives-updates/>) webpage.
+
+The goal for all department directives is to make sure services are consistent and meet specific standards across the State. They might cover a range of topics, including things like provider requirements, service changes, or funding adjustments. More will be posted on the [rate reform directives and updates](<https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.dds.ca.gov%2Frc%2Fvendor-provider%2Frate-reform%2Fdirectives-updates%2F&data=05%7C02%7CKrystyne.McComb%40dds.ca.gov%7C28cd71c2f6f84e7a729a08dd042a59d0%7C7cfc5487eae84559b408d4e67432d3d2%7C0%7C0%7C638671302125447377%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=ARTh9YBMOv0%2FJC3%2FlK8jfqT4reqd%2F%2FySnhOcCNumWTc%3D&reserved=0>) webpage in the coming weeks. Please sign up to [receive rate reform updates](<https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Flp.constantcontactpages.com%2Fsl%2FD4adq3J%2FProviderDirectory%3Fsource_id%3D3e2b50ea-4749-436c-ad1c-37260487940d%26source_type%3Dem%26c%3D&data=05%7C02%7CKrystyne.McComb%40dds.ca.gov%7C28cd71c2f6f84e7a729a08dd042a59d0%7C7cfc5487eae84559b408d4e67432d3d2%7C0%7C0%7C638671302125461443%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=aEoK0L3vsHU7IDDCZJl9CR5064lvEGtxd3ReBsYxsww%3D&reserved=0>) directly to your inbox.
+
+  
+
+Share

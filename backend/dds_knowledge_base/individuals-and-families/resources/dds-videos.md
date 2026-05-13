@@ -1,0 +1,34 @@
+# DDS Videos : CA Department of Developmental Services
+
+**Source:** [https://www.dds.ca.gov/individuals-and-families/resources/dds-videos/](https://www.dds.ca.gov/individuals-and-families/resources/dds-videos/)
+
+---
+
+DDS produced videos are available on the [DDS YouTube Channel](<https://www.youtube.com/user/CaliforniaDDS>).
+
+Title | Description | Versions | Production Date  
+---|---|---|---  
+Benton House | Inspirational video emphasizing what local collaboration can accomplish. Home in Santa Rosa for men with autism is remodeled and refurbished by local and state leaders. | [#181 English](<https://www.youtube.com/watch?v=PWsf8f77yMs&feature=youtu.be>) | 1993  
+Choices | Interviews with people with disabilities in supported living environments. | [#185 English](<https://www.youtube.com/watch?v=MDj60cW_wzw&feature=youtu.be>) | 1993  
+Dreaming New Dreams | Informative video about the Early Start Program for infants and toddlers with disabilities. | [#193 English](<https://www.youtube.com/watch?v=vtdbPqQ8LkM&feature=youtu.be>) | 1994  
+Hand Washing and Gloving | This video was designed as a training tool for direct support staff in the practice safeguards important to prevent the spread of germs. It provides step-by-step explanation and demonstration of proper technique for hand washing and wearing of disposable gloves. | [#267 English](<https://www.youtube.com/watch?v=VWgOmsEPEVo&feature=youtu.be>) | 2011  
+Making My Own Choices – Billy and Brian Living with a Family | This in an example of a Family Teaching home, this is a home where people can learn independent living skills while being included in a small family setting. | [English](<https://www.youtube.com/watch?v=e00JeIll1-I&feature=youtu.be>) | 2012  
+Making My Own Choices – Kyle’s Own Room in a Group Home | An example of a care home setting where a person may have a roommate or have their own room.  | [English](<https://www.youtube.com/watch?v=24JdIxR8kPQ&feature=youtu.be>) | 2012  
+Making My Own Choices – Elizabeth’s Shared Room | An example of a nursing facility (962 Home) that people with medical needs can move into. | [English](<https://www.youtube.com/watch?v=fmprU-kFbdc&feature=youtu.be>) | 2012  
+Making My Own Choices – Tony’s Apartment | An example of an individual with developmental disabilities has their own place with supports in their own home. | [English](<https://www.youtube.com/watch?v=LRA_siCWG3c&feature=youtu.be>) | 2012  
+Partnership For Success | An upbeat video that explores job training services available for persons with disabilities and visits them at their supported employment job sites. | [#195 English](<https://www.youtube.com/watch?v=WRY-Hm4qnxM&feature=youtu.be>) | 1994  
+Person-Centered Living Options – Part A | Training on Person-Centered Planning techniques and skills related to living options. | [#200 English](<https://www.youtube.com/watch?v=FYrtZNAYxpY&feature=youtu.be>) | 1996  
+Person-Centered Living Options – Part B | Training concerning supported living choices and options for persons with disabilities. | [#201 English](<https://www.youtube.com/watch?v=OtfdyC81cvY&feature=youtu.be>) | 1996  
+Person-Centered Planning | This video shows how person-centered planning has worked in the lives of three individuals and their families. Designed to accompany the DDS IPP Manual. | [#197 English](<https://www.youtube.com/watch?v=VvDYOHYKSVg&feature=youtu.be>) | 1994  
+Public Speaking for Everyone | A training program developed at ARC San Diego to promote public speaking skills and training for people with disabilities. This training is now being implemented throughout the state. | [#222 English](<https://www.youtube.com/watch?v=eqQPAaY-soA&feature=youtu.be>) | 1997  
+[Regional Centers](<https://www.dds.ca.gov/rc/>) | Regional centers link individuals with developmental disabilities and their families to services and supports. This video, translated into Spanish, shares the real stories of families and the role regional centers play in the State of California. | [#242 English](<https://www.youtube.com/watch?v=9_RxmKIlDuc&feature=youtu.be>) | [#260 Spanish](<https://www.youtube.com/watch?v=1pZLL9ylZmI&feature=youtu.be>) | 2000/2001  
+[Self-Determination Program](<https://www.dds.ca.gov/initiatives/sdp/>) | The Department has developed an informational video that features consumers and families currently in the self-determination pilot project as well as those who are interested in the SDP. | [English](<https://www.youtube.com/watch?v=pGZ3NlFpmkY&feature=youtu.be>) | [Arabic](<https://www.youtube.com/watch?v=4Zx4Lmu4xik&feature=youtu.be>) | [Armenian](<https://www.youtube.com/watch?v=R0DLUzCxpDE&feature=youtu.be>) | [Cambodian](<https://www.youtube.com/watch?v=sgxdvyC549E&feature=youtu.be>) | [Chinese](<https://www.youtube.com/watch?v=GDUZbSoHTUU&feature=youtu.be>) (Simplified) | [Chinese](<https://www.youtube.com/watch?v=Ww6EmTdK7NY&feature=youtu.be>) (Traditional) | [Farsi](<https://www.youtube.com/watch?v=yUZryI8xTZA&feature=youtu.be>) | [Hmong](<https://www.youtube.com/watch?v=bhDLyuA7IAw&feature=youtu.be>) | [Korean](<https://www.youtube.com/watch?v=vBeODLMfQS4&feature=youtu.be>) | [Russian](<https://www.youtube.com/watch?v=jSIJ3f2C2gs&feature=youtu.be>) | [Spanish](<https://www.youtube.com/watch?v=fllMrXvZ1Yg&feature=youtu.be>) (Voiceover) | [Tagalog](<https://www.youtube.com/watch?v=7MxbNQyzHzA&feature=youtu.be>) | [Vietnamese](<https://www.youtube.com/watch?v=SgRtuPM3gkU&feature=youtu.be>) (Voiceover) | 2015  
+Spirit of Leadership | Self-advocacy video featuring people with developmental disabilities in positions of leadership. | [#196 English](<https://www.youtube.com/watch?v=0hjrsxnUuOY&feature=youtu.be>) | 1994  
+Stories From The Community | Individuals with developmental disabilities discuss their experiences living in the community. Produced by Protection Advocacy Inc. | [#220 English](<https://www.youtube.com/watch?v=axPFcKusjAs&feature=youtu.be>) | 1997  
+The Power of Independence – The Value of Living Independently | This video, produced for the State Independent Living Council, expresses the Value of Living Independently as told in their own words by a variety of people with disabilities. It’s a powerful, touching and informative production that condenses a critical message into 18 action-packed minutes. This video was awarded an Honorable Mention in 2003 by the California State Information Officers Council. Two versions of the video are included on the same tape. Both are open-captioned and the second version is audio described. | [#284 English](<https://www.youtube.com/watch?v=y22fV9NridE&feature=youtu.be>) | 2003  
+  
+  
+
+Share 
+
+Last modified: June 7, 2019

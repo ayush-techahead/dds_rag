@@ -1,0 +1,42 @@
+# California Department of Developmental Services (DDS) Announces Actions to Support Individuals Conserved by DDS : CA Department of Developmental Services
+
+**Source:** [https://www.dds.ca.gov/news-releases/california-department-of-developmental-services-dds-announces-actions-to-support-individuals-conserved-by-dds/](https://www.dds.ca.gov/news-releases/california-department-of-developmental-services-dds-announces-actions-to-support-individuals-conserved-by-dds/)
+
+---
+
+**Sacramento, CA** – Today the Department of Developmental Services (DDS) is announcing immediate steps towards system improvements for Californians with intellectual and developmental disabilities in conservatorships where DDS is the court appointed conservator.
+
+These specific actions will better support individuals currently conserved by DDS and bring a person-centered focus to the conservatorship process. Approximately 57,000 regional center consumers are reported to have a conservator (non-DDS) and DDS is the court appointed conservator for 413 individuals. ![DDS is Conservator for less than 0.1% of the Regional Center Population](https://www.dds.ca.gov/wp-content/uploads/2022/08/DDS_ConservatorRCPopulationGraph-700x502.png)
+
+“DDS is committed to working with our partners, including consumers and families, to effect positive change to DDS’ conservatorship process. This includes building on our collective work in supporting individuals who have an intellectual or developmental disability through person-centered and culturally responsive approaches,” said Nancy Bargmann, Director DDS.
+
+The past two state budgets have made significant strides in advancing reforms to improve access to quality services and supports that are culturally and linguistically responsive to Californians with intellectual and developmental disabilities. Our work is especially focused on individuals with significant service needs requiring increased attention, as well as young children entering the system who can benefit from early intervention services.
+
+Additionally, through an extensive stakeholder process the Department has recently finalized Phase I of the Quality Incentive Program, which includes seven measures linked to provider payments. The measures advance the vision of DDS in the areas of prevention and wellness, employment, access to services, and workforce capacity, while also focusing on the delivery of high-quality, outcomebased services. Despite historic investments and initiatives focused on improved service access and equity, it is DDS’ obligation to hold ourselves and our system partners accountable, while ensuring that individuals with intellectual and developmental disabilities receive community-based services and supports that embrace choice and allows them to live with purpose and dignity. In addition to regional center service coordination and current oversight by DDS, the Department looks forward to ongoing community engagement to improve how we serve the whole person, while protecting the health and well-being of each individual. As such, the following is designed to enhance the experience of individuals with intellectual and developmental disabilities who are conserved by DDS:
+
+  * **Form a panel of national subject matter experts to conduct a complete review of DDS’ conservatorship program** in partnership with the National Association of State Directors of Developmental Disabilities Services. DDS will work with these experts to develop recommendations to improve the conservatorship process, identify alternatives to conservatorship to include supported decision making, and strengthen the Department’s oversight when it is the conservator. 
+  * **Form a multidepartment working group to conduct enhanced reviews for each of DDS’ 413 individual conservatees** , using staff that includes the Department of Social Services, Department of Aging, and the Department of Public Health. Enhanced review activities will include visits to each conservatee, an assessment of their living arrangement, a review to determine if additional supports or services are needed, both by the regional center, and services outside the regional center system such as physical, mental health and substance use disorder services. 
+  * **Enhance oversight and review of DDS’ 413 conservatorships:**
+    * By September 1, DDS will amend regional center contracts to include: 
+      * Increased reporting requirements for DDS conservatees; and
+      * A person-centered, comprehensive assessment for each individual conserved by DDS;
+    * DDS will issue a Directive to regional centers detailing the new enhanced oversight requirements.
+
+The actions outlined above are the next steps in DDS’ endeavor to improve access and the quality of culturally and linguistically responsive supports to Californians with intellectual and developmental disabilities. In early 2023, DDS will publicly issue an update on progress to date and recommendations resulting from these efforts. Additionally, recommendations from the expert panel and the multidepartment working group may inform future legislative changes. DDS takes its legal and moral obligations to its conservatees very seriously and looks forward to working with the community to improve its conservatorship process and enhance the lives of conservatees. The above recommendations build on adjustments to DDS’ conservatorship program implemented by DDS beginning in 2016 that include dedicated staff and additional case reviews. While the number of court-appointed DDS conservatorships has fallen by approximately 20% since 2016, DDS is committed to immediate action to increase oversight measures and further reduce the number of conservatorships by evaluating if there’s a continued need for the person to be conserved, or if there is a viable alternative.
+
+## Background:
+
+Current law allows the courts to appoint DDS as the conservator for an individual with intellectual and developmental disabilities when a third-party, such as law enforcement, Adult Protective Services, a court, or other responsible parties, is concerned about the health, safety or welfare of a person and there has been a comprehensive review of the individual’s circumstances. The day-to-day responsibility to monitor the health and welfare and supports of each of DDS’ conservatees is delegated to one of the 21 non-profit regional centers who perform service coordination for all individuals served in the developmental service system. In addition to regional center’s responsibilities for service coordination, when courts appoint DDS as a limited conservator, DDS provides ongoing review and monitoring of each person’s services and supports and assesses if conservatorship is still needed. DDS activities include, but are not limited to:
+
+  * Review annual court investigator reports sent to DDS to ensure conservatees are being cared for appropriately. If issues are identified in the court report, DDS works with regional centers, service providers, and others to ensure issues are resolved and the conservatee’s health, safety and wellbeing are secure.
+  * A dedicated coordinator at DDS who reviews regional center reports, reported incidents and conducts home visits to monitor services provided to each individual conserved by DDS.
+
+The above review protocol has allowed DDS to carefully review each case and decline nominations for approximately one-third of the nominations received annually. Although there continues to be 20-25 petitions for new limited DDS conservatorships per year, the total number of DDS conservatorships has declined by approximately 20% since 2016. Of the 413 individuals currently conserved by DDS, 317 individuals have been conserved for more than 10 years.
+
+_###_
+
+**About DDS:** Under the Lanterman Developmental Disabilities Services Act, DDS is responsible for overseeing the coordination and delivery of services and supports to approximately 400,000 Californians with, or at risk for, developmental disabilities including cerebral palsy, intellectual disability, autism, epilepsy and related conditions. The state’s service system is designed to meet the needs and choices of individuals at each stage of their lives, and, to the extent possible, support them in their home communities, providing choices that are reflective of lifestyle, cultural and linguistic preferences.
+
+  
+
+Share

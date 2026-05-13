@@ -1,0 +1,16 @@
+# Share Your Experiences with Services in the NCI Family Survey : CA Department of Developmental Services
+
+**Source:** [https://www.dds.ca.gov/newsletter/nci-family-survey/](https://www.dds.ca.gov/newsletter/nci-family-survey/)
+
+---
+
+Why should you participate in the National Core Indicators (NCI) surveys? They can change the future of developmental services! The NCI surveys help the Department and regional centers make improvements. Individuals, families, guardians, and conservators of children and adults who receive at least one service are invited to complete these surveys. The NCI surveys ask about your experiences with regional centers and the services and supports you receive. They are a great way for you to provide anonymous direct feedback.
+
+Thanks to thousands of families who completed and submitted their surveys in FY 2021/2022. The family survey [NCI domain dashboards](<https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.dds.ca.gov%2Frc%2Fnci%2Fnci-domain-dashboards%2F&data=05%7C02%7CKrystyne.McComb%40dds.ca.gov%7Ca937ee9896b049e56f6408dc9fc31499%7C7cfc5487eae84559b408d4e67432d3d2%7C0%7C0%7C638560907445952354%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=RNoN2xx%2F5BWccJDxCSzLtb0Ep9nFShQKFKwypuv635I%3D&reserved=0>) and the [NCI Year-Over-Year dashboards](<https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.dds.ca.gov%2Frc%2Fnci%2Fnci-year-over-year-domain-dashboards%2F&data=05%7C02%7CKrystyne.McComb%40dds.ca.gov%7Ca937ee9896b049e56f6408dc9fc31499%7C7cfc5487eae84559b408d4e67432d3d2%7C0%7C0%7C638560907445960705%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=B%2FzcTo%2FhRVoicAlh3YMIDT7lbaPM5qiIeuM1IjZIbLg%3D&reserved=0>) have been updated. You can see the survey data results for regional centers and for the entire State. For the latest FY 2023/2024 data collection, [surveys were filled out online or via mail through July 30, 2024 ](<https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fmyemail-api.constantcontact.com%2FNational-Core-Indicators-Survey.html%3Fsoid%3D1134980383158%26aid%3DiezAhZTE4mc&data=05%7C02%7CKrystyne.McComb%40dds.ca.gov%7Ca937ee9896b049e56f6408dc9fc31499%7C7cfc5487eae84559b408d4e67432d3d2%7C0%7C0%7C638560907445940338%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=OYethJ2YWFu2FXFykh1uLYTESc0KoiC3wL95Q%2FCqx6Q%3D&reserved=0>)and the results are being compiled.
+
+In Fall 2024, the NCI In-Person Survey will begin with adults served by a regional center. Stay tuned for updates from the Department. You can find more information on NCI and the four NCI surveys conducted in California on the [NCI page of the DDS website.  
+](<https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.dds.ca.gov%2Frc%2Fnci%2F&data=05%7C02%7CKrystyne.McComb%40dds.ca.gov%7Ca937ee9896b049e56f6408dc9fc31499%7C7cfc5487eae84559b408d4e67432d3d2%7C0%7C0%7C638560907445966332%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=yw5OkmtdiMis6jj67bvq9%2FO5ZmrGvJXZ7bu6rcQ1QB4%3D&reserved=0>)
+
+  
+
+Share

@@ -1,0 +1,116 @@
+.chat-input-container {
+    width: 100%;
+    max-width: 56rem;
+    /* max-w-4xl */
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.chat-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: var(--color-bg-paper);
+    border-radius: 0.75rem;
+    /* rounded-xl */
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border);
+    transition: border-color 0.2s;
+}
+
+.chat-input-wrapper:focus-within {
+    border-color: var(--color-primary);
+}
+
+.chat-input-field {
+    width: 100%;
+    background-color: transparent;
+    color: var(--color-text-main);
+    padding: 1rem 3.5rem 1rem 1rem;
+    /* Right padding for button space */
+    border-radius: 0.75rem;
+    border: none;
+    font-size: 1.125rem;
+    /* text-lg */
+    outline: none;
+}
+
+.chat-input-field::placeholder {
+    color: var(--color-text-muted);
+}
+
+.chat-send-button {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chat-send-button:hover:not(:disabled) {
+    background-color: var(--color-border);
+    color: white;
+}
+
+.chat-send-button:disabled {
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.spinner-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    animation: spin 1s linear infinite;
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+@keyframes spin {
+    from {
+        transform: translateY(-50%) rotate(0deg);
+    }
+
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+/* Adjust keyframe for centered button item */
+@keyframes spin-centered {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fix spinner animation conflict with transform centering */
+.chat-send-button .spinner-icon {
+    transform: none;
+    animation: simple-spin 1s linear infinite;
+}
+
+@keyframes simple-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
