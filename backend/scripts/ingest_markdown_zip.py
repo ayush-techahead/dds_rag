@@ -93,7 +93,7 @@ def main() -> None:
     )
     p.add_argument(
         "--full-name",
-        default="ZIP ingest CLI",
+        default="DDS Tester",
         help="With --register: full_name field",
     )
     args = p.parse_args()

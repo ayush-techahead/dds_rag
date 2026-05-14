@@ -1,0 +1,11 @@
+{
+    cert_issuer acme {
+        dir https://acme-v02.api.letsencrypt.org/directory
+        profile shortlived
+    }
+}
+
+{$SITE_ADDRESS::80} {
+    encode gzip zstd
+    reverse_proxy nginx:80
+}

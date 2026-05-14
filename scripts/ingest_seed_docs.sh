@@ -95,6 +95,7 @@ main() {
   if [[ "${INGEST_REGISTER:-true}" == "true" ]]; then
     register_flag=(--register)
   fi
+  local ingest_full_name="${INGEST_FULL_NAME:-DDS Tester}"
 
   local docker_binary
   docker_binary="$(docker_cmd)"
@@ -105,6 +106,7 @@ main() {
       --base-url http://127.0.0.1:8000 \
       --email "$INGEST_EMAIL" \
       --password "$INGEST_PASSWORD" \
+      --full-name "$ingest_full_name" \
       "${register_flag[@]}"
 
   printf '%s\n' "$checksum" >"$INGEST_MARKER"

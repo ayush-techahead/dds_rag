@@ -124,17 +124,33 @@ PY
   fi
 }
 
+build_public_origin() {
+  local public_ip="$1"
+  local site_address="${SITE_ADDRESS:-:80}"
+
+  if [[ "$site_address" == "auto-ip" ]]; then
+    [[ -n "$public_ip" ]] || die "Set EC2_PUBLIC_IP in deploy/.env or run this on EC2 with metadata access."
+    printf 'https://%s' "$public_ip"
+  elif [[ "$site_address" == ":80" || -z "$site_address" ]]; then
+    [[ -n "$public_ip" ]] || die "Set EC2_PUBLIC_IP in deploy/.env or run this on EC2 with metadata access."
+    if [[ "${HTTP_PORT:-80}" == "80" ]]; then
+      printf 'http://%s' "$public_ip"
+    else
+      printf 'http://%s:%s' "$public_ip" "${HTTP_PORT:-80}"
+    fi
+  elif [[ "$site_address" == http://* || "$site_address" == https://* ]]; then
+    printf '%s' "${site_address%/}"
+  else
+    printf 'https://%s' "$site_address"
+  fi
+}
+
 build_cors_origins() {
   local public_ip="$1"
-  local port="${NGINX_PORT:-80}"
   local public_origin
-  if [[ "$port" == "80" ]]; then
-    public_origin="http://${public_ip}"
-  else
-    public_origin="http://${public_ip}:${port}"
-  fi
+  public_origin="$(build_public_origin "$public_ip")"
 
-  printf '["%s","http://localhost","http://127.0.0.1"]' "$public_origin"
+  printf '["%s","http://localhost","http://127.0.0.1","http://localhost:5173","http://127.0.0.1:5173"]' "$public_origin"
 }
 
 write_backend_env() {
@@ -148,7 +164,6 @@ write_backend_env() {
   fi
 
   [[ -n "${OPENAI_API_KEY:-}" ]] || die "Set OPENAI_API_KEY in deploy/.env."
-  [[ -n "$public_ip" ]] || die "Set EC2_PUBLIC_IP in deploy/.env or run this on EC2 with metadata access."
 
   local cors_origins
   cors_origins="${BACKEND_CORS_ORIGINS:-$(build_cors_origins "$public_ip")}"
@@ -251,6 +266,10 @@ main() {
 
   local public_ip docker_binary
   public_ip="$(detect_public_ip)"
+  if [[ "${SITE_ADDRESS:-:80}" == "auto-ip" ]]; then
+    [[ -n "$public_ip" ]] || die "Set EC2_PUBLIC_IP in deploy/.env or run this on EC2 with metadata access."
+    export SITE_ADDRESS="$public_ip"
+  fi
   write_backend_env "$public_ip"
 
   docker_binary="$(docker_cmd)"
@@ -264,8 +283,10 @@ main() {
   "$ROOT_DIR/scripts/ingest_seed_docs.sh"
 
   log "Deployment complete"
-  printf 'Website: http://%s%s\n' "$public_ip" "$([[ "${NGINX_PORT:-80}" == "80" ]] && printf '' || printf ':%s' "${NGINX_PORT}")"
-  printf 'Health:  http://%s%s/api/v1/health\n' "$public_ip" "$([[ "${NGINX_PORT:-80}" == "80" ]] && printf '' || printf ':%s' "${NGINX_PORT}")"
+  local public_origin
+  public_origin="$(build_public_origin "$public_ip")"
+  printf 'Website: %s\n' "$public_origin"
+  printf 'Health:  %s/api/v1/health\n' "$public_origin"
 }
 
 main "$@"

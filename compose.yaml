@@ -64,14 +64,30 @@ services:
         VITE_OPENAI_REALTIME_WEBRTC_HANDSHAKE: ${VITE_OPENAI_REALTIME_WEBRTC_HANDSHAKE:-calls}
         VITE_OPENAI_REALTIME_HTTP_BASE: ${VITE_OPENAI_REALTIME_HTTP_BASE:-https://api.openai.com/v1}
     container_name: dds_rag_nginx
-    ports:
-      - "${NGINX_PORT:-80}:80"
     depends_on:
       backend:
         condition: service_healthy
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: dds_rag_caddy
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - nginx
     restart: unless-stopped
 
 volumes:
   mongodb_data:
   qdrant_data:
   backend_storage:
+  caddy_data:
+  caddy_config:
