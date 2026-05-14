@@ -1,4 +1,6 @@
 {
+    default_sni {$SITE_ADDRESS}
+
     cert_issuer acme {
         dir https://acme-v02.api.letsencrypt.org/directory
         profile shortlived
