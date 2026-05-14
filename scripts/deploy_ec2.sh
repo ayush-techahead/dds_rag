@@ -274,6 +274,9 @@ main() {
 
   docker_binary="$(docker_cmd)"
 
+  log "Pulling Caddy for HTTPS/IP certificate support"
+  $docker_binary compose --env-file "$DEPLOY_ENV" -f "$COMPOSE_FILE" pull caddy
+
   log "Building and starting the production stack"
   $docker_binary compose --env-file "$DEPLOY_ENV" -f "$COMPOSE_FILE" up -d --build
 
