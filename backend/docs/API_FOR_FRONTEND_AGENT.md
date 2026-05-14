@@ -76,13 +76,13 @@ Max size is controlled by **`MAX_UPLOAD_SIZE_MB`** (see `.env.example`).
 
 > **For the full SPA implementation spec** (lifecycle, WebRTC setup, event handlers, TypeScript types, error handling, UX checklist, and a working single-file React reference) see [`FRONTEND_VOICE_INTEGRATION.md`](./FRONTEND_VOICE_INTEGRATION.md). The section below summarises the HTTP contract; everything WebRTC- and event-handler-related lives in the companion doc.
 
-Duplex voice (mic in, spoken answer out, server-side VAD) uses **OpenAI’s Realtime API** from the browser. This backend never proxies audio; it mints **short-lived credentials**, runs **documentation search** when the model calls a tool, and can **persist transcripts** to the same Mongo chat session as text.
+Duplex voice (mic in, spoken answer out) uses **OpenAI’s Realtime API** from the browser. This backend never proxies audio; it mints **short-lived credentials** for `gpt-realtime-2`, runs **documentation search** when the model calls a tool, and can **persist transcripts** to the same Mongo chat session as text.
 
 ### Environment
 
 - **`OPENAI_API_KEY`** — required for minting Realtime sessions (server-side only).
 - **`OPENAI_REALTIME_API_BASE`** — default `https://api.openai.com/v1`. Realtime client-secret creation uses `POST {OPENAI_REALTIME_API_BASE}/realtime/client_secrets`. This is separate from **`OPENAI_BASE_URL`**, which is used for chat completions and embeddings; many OpenAI-compatible hosts do not implement Realtime.
-- **`OPENAI_REALTIME_MODEL`**, **`OPENAI_REALTIME_VOICE`**, **`OPENAI_REALTIME_REQUEST_TIMEOUT_SECONDS`** — see `.env.example`.
+- **`OPENAI_REALTIME_MODEL`**, **`OPENAI_REALTIME_VOICE`**, **`OPENAI_REALTIME_REASONING_EFFORT`**, **`OPENAI_REALTIME_TRANSCRIPTION_MODEL`**, **`OPENAI_REALTIME_NOISE_REDUCTION`**, **`OPENAI_REALTIME_REQUEST_TIMEOUT_SECONDS`** — see `.env.example`.
 
 ### Mint ephemeral session
 
@@ -91,7 +91,7 @@ Duplex voice (mic in, spoken answer out, server-side VAD) uses **OpenAI’s Real
 - **Auth:** Bearer JWT; session must belong to the user.
 - **Response:** `RealtimeSessionMintResponse` — `client_secret.value` (ephemeral token), `client_secret.expires_at`, `openai_session_id`, `model`, `chat_session_id`.
 
-Use `client_secret.value` to authenticate the browser’s WebRTC or WebSocket connection to OpenAI (see [OpenAI Realtime guide](https://platform.openai.com/docs/guides/realtime)). The client secret is bound to a GA Realtime session with **audio** output, **server VAD**, input transcription (**whisper-1**), and one function tool named **`lookup_documentation`**.
+Use `client_secret.value` to authenticate the browser’s WebRTC connection to OpenAI via `POST https://api.openai.com/v1/realtime/calls` (see [OpenAI Realtime guide](https://platform.openai.com/docs/guides/realtime)). The client secret is bound to a GA Realtime session with **audio** output, `gpt-realtime-2`, `reasoning.effort=low`, semantic VAD by default, input transcription, input noise reduction, and one function tool named **`lookup_documentation`**.
 
 ### RAG tool (HTTP bridge)
 
@@ -145,7 +145,7 @@ WebRTC carries audio over the media track, but the assistant's **text transcript
 ### Why audio sometimes cuts off mid-response
 
 - **Server-side token cap.** Client secrets minted by this backend now set the session `max_output_tokens` from `OPENAI_REALTIME_MAX_OUTPUT_TOKENS` (default `"inf"`); without it OpenAI silently caps Realtime responses and the audio ends abruptly. Bump or tune via `.env`.
-- **VAD interruption.** Background noise (or the assistant's own audio if echo cancellation is off in the browser) can trip server-VAD into thinking the user started speaking, which cancels the in-flight response. The backend now pins minted Realtime sessions to non-interrupting server VAD: `interrupt_response=false`, `threshold=0.78`, `prefix_padding_ms=350`, and `silence_duration_ms=650`. On the SPA side, request the mic with `echoCancellation: true, noiseSuppression: true, autoGainControl: true`, disable the local mic while assistant audio is audible, and ignore VAD events until playback finishes.
+- **VAD interruption.** Background noise (or the assistant's own audio if echo cancellation is off in the browser) can trip VAD into thinking the user started speaking, which can interrupt an in-flight response. The backend defaults minted Realtime 2 sessions to `semantic_vad` with `interrupt_response=false`; `server_vad` threshold/padding/silence knobs remain configurable if a deployment needs stricter echo tuning. On the SPA side, request the mic with `echoCancellation: true, noiseSuppression: true, autoGainControl: true`, disable the local mic while assistant audio is audible, and ignore VAD events until playback finishes.
 - **Missing tool reply.** If the SPA receives `response.function_call_arguments.done` but never returns `function_call_output` + `response.create`, the model stops talking and the response truncates. See the table above.
 
 ## Automated validation

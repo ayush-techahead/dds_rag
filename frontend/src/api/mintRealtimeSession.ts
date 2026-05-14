@@ -5,6 +5,7 @@ export type RealtimeSessionMintResponse = {
   openai_session_id: string;
   client_secret: { value: string; expires_at: number };
   model: string;
+  voice_instructions?: string;
 };
 
 async function parseDetail(response: Response): Promise<string> {

@@ -60,8 +60,9 @@ async def test_knowledge_path_merges_indexed_only_classifier_placeholder(monkeyp
     assert "bundle.zip/docs/guide.md" not in body
     assert "guide.markdown" not in body
     assert "Document ID: doc-123" not in body
-    assert "## Where to learn more" in body
-    assert "put them only in the final ## Where to learn more section" in body
+    assert "Helpful links" in body
+    assert "Do not say you are checking" in body or "Do not write phrases" in body
+    assert "I do not have that information available" in body
     assert "Use only actual DDS website URLs" in body
 
 

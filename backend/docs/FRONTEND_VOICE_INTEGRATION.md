@@ -47,7 +47,7 @@ but the SPA must still implement six specific things:
 ```
 ┌────────────────┐                          ┌──────────────────────┐
 │   Browser SPA  │ ───── audio (WebRTC) ──► │  OpenAI Realtime     │
-│  (this code)   │ ◄──── audio + events ─── │  (gpt-realtime)      │
+│  (this code)   │ ◄──── audio + events ─── │  (gpt-realtime-2)    │
 └──┬─────────────┘                          └────────┬─────────────┘
    │                                                 │
    │ 1. mint session              4. tool query      │
@@ -176,12 +176,7 @@ dataChannel.addEventListener("message", (e) => {
 const offer = await pc.createOffer();
 await pc.setLocalDescription(offer);
 
-const handshakeBase =
-  import.meta.env.VITE_OPENAI_REALTIME_WEBRTC_HANDSHAKE === "calls"
-    ? "https://api.openai.com/v1/realtime/calls"
-    : "https://api.openai.com/v1/realtime";
-
-const sdpResp = await fetch(`${handshakeBase}?model=${encodeURIComponent(mint.model)}`, {
+const sdpResp = await fetch("https://api.openai.com/v1/realtime/calls", {
   method: "POST",
   headers: {
     Authorization: `Bearer ${mint.client_secret.value}`,
@@ -655,10 +650,11 @@ export type ChatSessionDetailResponse = ChatSessionResponse & {
 | Var | Purpose | Default |
 |---|---|---|
 | `VITE_API_BASE_URL` | Backend host (e.g. `http://localhost:8000`) | required |
-| `VITE_OPENAI_REALTIME_WEBRTC_HANDSHAKE` | `sessions` (legacy `/v1/realtime`) or `calls` (newer `/v1/realtime/calls`). Match the OpenAI account's supported handshake. | `sessions` |
+| `VITE_OPENAI_REALTIME_WEBRTC_HANDSHAKE` | Omit or `calls` for GA `/v1/realtime/calls`; `realtime` opts into legacy `/v1/realtime?model=...`. | `calls` |
 
 The backend's `OPENAI_REALTIME_API_BASE`, `OPENAI_REALTIME_MODEL`, `OPENAI_REALTIME_VOICE`,
-`OPENAI_REALTIME_MAX_OUTPUT_TOKENS`, and VAD knobs are server-side only — the SPA
+`OPENAI_REALTIME_REASONING_EFFORT`, `OPENAI_REALTIME_TRANSCRIPTION_MODEL`,
+`OPENAI_REALTIME_NOISE_REDUCTION`, `OPENAI_REALTIME_MAX_OUTPUT_TOKENS`, and VAD knobs are server-side only — the SPA
 never sets these.
 
 ---
@@ -763,8 +759,7 @@ export function VoiceChat({ jwt, chatSessionId }: { jwt: string; chatSessionId: 
 
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    const handshake = "https://api.openai.com/v1/realtime";
-    const sdp = await fetch(`${handshake}?model=${mint.model}`, {
+    const sdp = await fetch("https://api.openai.com/v1/realtime/calls", {
       method: "POST",
       headers: { Authorization: `Bearer ${mint.client_secret.value}`, "Content-Type": "application/sdp" },
       body: offer.sdp,

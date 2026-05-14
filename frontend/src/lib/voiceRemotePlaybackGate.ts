@@ -12,8 +12,8 @@ export const PLAYBACK_TAIL_SILENCE_MS = 550;
 /** Ignore silence detection for this long after arming (small jitter buffer; the analyser now sees real audio). */
 export const PLAYBACK_TAIL_MIN_HOLD_MS = 180;
 
-/** Force mic release if silence never stabilizes (broken AudioContext, analyser stuck, etc.). */
-export const PLAYBACK_TAIL_MAX_MS = 9000;
+/** Force mic release if silence never stabilizes (analyser can read residual WebRTC noise). */
+export const PLAYBACK_TAIL_MAX_MS = 1800;
 
 /** Polling interval for RMS reads (stable under background tab throttling vs rAF). */
 export const PLAYBACK_TAIL_SAMPLE_INTERVAL_MS = 32;
@@ -114,7 +114,7 @@ export function createPlaybackTailWatcher(opts: {
   maxWaitMs?: number;
   sampleIntervalMs?: number;
 }): PlaybackTailWatcher {
-  let intervalId: ReturnType<typeof setInterval> | null = null;
+  let intervalId: number | null = null;
   let armed = false;
   let armedAt = 0;
   let silenceAccumMs = 0;

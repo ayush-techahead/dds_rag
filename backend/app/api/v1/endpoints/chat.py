@@ -169,7 +169,7 @@ async def create_realtime_session(
 
     t0 = time.perf_counter()
     try:
-        result = await mint_openai_realtime_session(chat_session_id=session_id)
+        result = await mint_openai_realtime_session(chat_session_id=session_id, user_id=user_id)
     except AppException as exc:
         await record_voice_event(
             user_id=user_id,
@@ -215,7 +215,7 @@ async def realtime_lookup_documentation(
         event=VoiceEventType.TOOL_LOOKUP,
         elapsed_ms=round((time.perf_counter() - t0) * 1000, 1),
         status_code=200,
-        detail=("no_sources" if result.startswith("NO_SOURCES:") else "ok"),
+        detail=("no_relevant_info" if result.startswith("NO_RELEVANT_INFO:") else "ok"),
     )
     return LookupDocumentationResponse(result=result)
 
@@ -234,7 +234,11 @@ async def realtime_lookup_documentation(
             )
         },
         404: {"description": "Chat session not found or not owned by the caller."},
-        422: {"description": "Validation error (malformed session_id or transcripts exceeding length limits)."},
+        422: {
+            "description": (
+                "Validation error (malformed session_id or transcripts exceeding length limits)."
+            ),
+        },
     },
 )
 async def commit_voice_transcripts(

@@ -101,10 +101,54 @@
   background-color: var(--color-bg-base);
 }
 
+.chat-area-voice-mode {
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 2rem;
+}
+
 .chat-content-width {
   width: 100%;
   /* max-width: 56rem; */
   /* margin: 0 auto; */
+}
+
+.voice-mode-screen {
+  width: min(48rem, 100%);
+  min-height: min(40rem, calc(100vh - 10rem));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.voice-mode-intro {
+  text-align: center;
+}
+
+.voice-mode-kicker {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.voice-mode-intro h2 {
+  margin: 0;
+  color: var(--color-text-main);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.voice-mode-intro p {
+  margin: 0.4rem auto 0;
+  max-width: 32rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
 }
 
 .input-area {
@@ -118,7 +162,7 @@
 .input-area-composer {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
   gap: 0.75rem;
   max-width: 56rem;
   width: 100%;
@@ -186,6 +230,23 @@
 
   .mobile-menu-btn {
     display: block;
+  }
+
+  .input-area-composer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input-area-voice-slot .voice-controls {
+    max-width: none;
+  }
+
+  .chat-area-voice-mode {
+    padding: 1rem;
+  }
+
+  .voice-mode-screen {
+    min-height: auto;
   }
 }
 

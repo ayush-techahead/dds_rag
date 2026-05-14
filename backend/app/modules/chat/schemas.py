@@ -94,3 +94,4 @@ class RealtimeSessionMintResponse(BaseModel):
     openai_session_id: str
     client_secret: RealtimeClientSecret
     model: str
+    voice_instructions: str = ""

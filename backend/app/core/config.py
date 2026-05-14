@@ -51,8 +51,12 @@ class Settings(BaseSettings):
     # OpenAI-compatible gateways often do not implement /v1/realtime/client_secrets;
     # keep a dedicated base for that path even when OPENAI_BASE_URL points elsewhere.
     OPENAI_REALTIME_API_BASE: str = "https://api.openai.com/v1"
-    OPENAI_REALTIME_MODEL: str = "gpt-realtime"
-    OPENAI_REALTIME_VOICE: str = "alloy"
+    OPENAI_REALTIME_MODEL: str = "gpt-realtime-2"
+    OPENAI_REALTIME_VOICE: str = "marin"
+    OPENAI_REALTIME_REASONING_EFFORT: str = "low"
+    OPENAI_REALTIME_TRANSCRIPTION_MODEL: str = "gpt-4o-mini-transcribe"
+    # OpenAI Realtime input noise reduction type. Set to "none" to omit.
+    OPENAI_REALTIME_NOISE_REDUCTION: str = "near_field"
     OPENAI_REALTIME_REQUEST_TIMEOUT_SECONDS: float = 60.0
     # Total *additional* attempts after the first request on transient 502/503/504
     # or network errors. 0 disables the retry loop entirely.
@@ -67,9 +71,11 @@ class Settings(BaseSettings):
     # "audio stops mid-sentence" on long answers that include tool-call excerpts.
     # Accepts an integer or the string "inf" (sent through verbatim).
     OPENAI_REALTIME_MAX_OUTPUT_TOKENS: str = "inf"
-    # Historical server-VAD defaults. The Realtime mint path now pins a
-    # non-interrupting VAD contract in code so voice follow-ups cannot cancel the
-    # assistant audio currently playing in the browser.
+    # Default to the Realtime 2 guide's semantic VAD. Server-VAD knobs remain
+    # configurable for deployments that need stricter echo handling.
+    OPENAI_REALTIME_VAD_TYPE: str = "semantic_vad"
+    OPENAI_REALTIME_VAD_INTERRUPT_RESPONSE: bool = False
+    OPENAI_REALTIME_VAD_CREATE_RESPONSE: bool = True
     OPENAI_REALTIME_VAD_THRESHOLD: float = 0.78
     OPENAI_REALTIME_VAD_PREFIX_PADDING_MS: int = 350
     OPENAI_REALTIME_VAD_SILENCE_MS: int = 650
@@ -86,8 +92,8 @@ class Settings(BaseSettings):
     # Voice-specific RAG budget. Realtime model contexts are smaller and audio
     # synthesis cuts off on long token streams, so we ground voice answers with
     # fewer passages and tighter excerpts than the text path uses.
-    CHAT_RAG_VOICE_TOP_K: int = 3
-    CHAT_RAG_VOICE_EXCERPT_CHARS: int = 1500
+    CHAT_RAG_VOICE_TOP_K: int = 5
+    CHAT_RAG_VOICE_EXCERPT_CHARS: int = 2200
     # Lower values reduce speculative phrasing; None uses provider default.
     CHAT_RESPONDER_TEMPERATURE: float | None = 0.2
 

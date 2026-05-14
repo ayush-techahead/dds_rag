@@ -8,3 +8,5 @@ deploy/.env
 # Generated deployment seed artifacts
 deploy/seed/*
 !deploy/seed/.gitkeep
+
+documents/*

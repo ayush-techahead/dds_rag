@@ -13,8 +13,9 @@ export function validateLoginCredentials(
     password,
   });
   if (parsed.success) return null;
-  const msg = parsed.error.issues[0]?.message;
-  if (parsed.error.issues[0]?.code === 'invalid_string' && parsed.error.issues[0]?.path[0] === 'email') {
+  const firstIssue = parsed.error.issues[0];
+  const msg = firstIssue?.message;
+  if (firstIssue?.path[0] === 'email') {
     return 'Enter a valid email address.';
   }
   return typeof msg === 'string' ? msg : 'Validation error.';

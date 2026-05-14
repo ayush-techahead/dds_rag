@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
 from typing import Any
 
 import httpx
@@ -19,19 +21,11 @@ _TRANSIENT_STATUS_CODES = frozenset({500, 502, 503, 504})
 
 LOOKUP_DOCUMENTATION_TOOL_NAME = "lookup_documentation"
 
-_EXPECTED_REALTIME_TURN_DETECTION: dict[str, Any] = {
-    "type": "server_vad",
-    "interrupt_response": False,
-    "threshold": 0.78,
-    "prefix_padding_ms": 350,
-    "silence_duration_ms": 650,
-}
-
 LOOKUP_DOCUMENTATION_TOOL: dict[str, Any] = {
     "type": "function",
     "name": LOOKUP_DOCUMENTATION_TOOL_NAME,
     "description": (
-        "Search indexed DDS documentation and website-derived chunks. "
+        "Retrieve relevant DDS context from indexed content. "
         "Call before answering specific procedural, eligibility, or program-detail questions. "
         "Use a concise English search query."
     ),
@@ -40,41 +34,52 @@ LOOKUP_DOCUMENTATION_TOOL: dict[str, Any] = {
         "properties": {
             "query": {
                 "type": "string",
-                "description": "Search query for documentation retrieval.",
+                "description": "Concise DDS lookup query.",
             }
         },
         "required": ["query"],
     },
 }
 
-
 def _voice_instructions(chat_session_id: str) -> str:
     return (
-        "You are a helpful voice assistant for California DDS documentation and indexed "
-        f"product knowledge. This chat session id is {chat_session_id} (for logging only).\n\n"
+        "You are a candid, supportive voice assistant for California DDS information. "
+        "Answer directly in natural spoken language and help the user take the next "
+        "practical step. "
+        f"This chat session id is {chat_session_id} (for logging only).\n\n"
         "WEBSITE OVERVIEW — use for high-level DDS facts (mission, contacts, structure):\n"
         f"{WEBSITE_DESCRIPTION.strip()}\n\n"
         "For procedures, eligibility, programs, or case-specific detail: call the "
         f"{LOOKUP_DOCUMENTATION_TOOL_NAME} tool with a short search query before answering. "
-        "If the tool returns text starting with NO_SOURCES, say you cannot find it in the "
-        "indexed documentation and suggest rephrasing.\n\n"
+        "Do not narrate the tool call, mention source material, or say that you are "
+        "checking anything. If the tool returns text starting with NO_RELEVANT_INFO, "
+        "say plainly that the information is not available for that specific question "
+        "and ask for one clarifying detail only if it would help.\n\n"
+        "Tool policy:\n"
+        "- For DDS factual, procedural, eligibility, services, intake, regional center, "
+        "program, or contact questions, call lookup_documentation before answering unless "
+        "the answer is fully covered by the website overview.\n"
+        "- Do not call lookup_documentation repeatedly with the same query after a "
+        "NO_RELEVANT_INFO result or tool failure; answer that the information is not "
+        "available and ask the user to rephrase or narrow the request only if useful.\n"
+        "- After lookup_documentation returns passages, ground the answer only in those "
+        "passages plus the overview.\n\n"
         "Rules:\n"
+        "- Start with the answer, not a process update. Do not say you are checking, "
+        "reviewing, searching, or looking anything up. Do not include process or "
+        "citation-style phrases in the answer.\n"
+        "- Be empathetic and candid. Keep wording concrete and useful; avoid filler.\n"
         "- Do not invent facts beyond the overview and tool results.\n"
         "- If tool excerpts conflict with the overview on specifics, trust the excerpts.\n"
         "- Never mention markdown files, uploaded filenames, archive filenames, or document IDs "
         "in the answer.\n"
-        "- Use only actual DDS website URLs (dds.ca.gov) for reference links and citations; "
-        "never cite a markdown file or uploaded document as a source.\n"
-        "- Use the same answer structure as text chat:\n"
-        "  (direct response)\n"
-        "  ## Where to learn more\n"
-        "  (bullet list: include only DDS website URLs from tool passages you used; include "
-        "passage numbers [n] when the link came from a tool passage. If only the overview "
-        "applied, link or name https://www.dds.ca.gov from the overview text only. If no DDS "
-        "website link is available, do not list file-based citations; instead ask whether the "
-        "user would like links to DDS resources or any other information.)\n"
-        "- Keep reference links, URLs, source titles, and passage citations out of the direct "
-        "response; put them only in the final ## Where to learn more section.\n"
+        "- Use only actual DDS website URLs (dds.ca.gov) for links; never cite a markdown "
+        "file or uploaded document as a source.\n"
+        "- Do not use Markdown section headings in voice. If a link is truly helpful, "
+        "mention at most one or two DDS page names and URLs near the end. If no DDS link "
+        "is available, skip links instead of discussing missing sources.\n"
+        "- Ask one focused follow-up question only when it would help the user move "
+        "forward; otherwise end cleanly after the answer.\n"
         "- Keep answers focused; long unbroken monologues can be truncated by the audio "
         "pipeline. If the topic is broad, summarize first and offer to expand on parts.\n"
     )
@@ -96,7 +101,46 @@ def _coerce_max_output_tokens(raw: str) -> str | int:
         n = int(value)
     except ValueError:
         return "inf"
-    return max(1, min(n, 4096))
+    return max(100, min(n, 4096))
+
+
+def _realtime_turn_detection() -> dict[str, Any]:
+    vad_type = (settings.OPENAI_REALTIME_VAD_TYPE or "semantic_vad").strip() or "semantic_vad"
+    turn_detection: dict[str, Any] = {
+        "type": vad_type,
+        "interrupt_response": bool(settings.OPENAI_REALTIME_VAD_INTERRUPT_RESPONSE),
+        "create_response": bool(settings.OPENAI_REALTIME_VAD_CREATE_RESPONSE),
+    }
+    if vad_type == "server_vad":
+        turn_detection.update(
+            {
+                "threshold": settings.OPENAI_REALTIME_VAD_THRESHOLD,
+                "prefix_padding_ms": settings.OPENAI_REALTIME_VAD_PREFIX_PADDING_MS,
+                "silence_duration_ms": settings.OPENAI_REALTIME_VAD_SILENCE_MS,
+            },
+        )
+    return turn_detection
+
+
+def _realtime_noise_reduction() -> dict[str, str] | None:
+    value = (settings.OPENAI_REALTIME_NOISE_REDUCTION or "").strip().lower()
+    if not value or value in {"none", "off", "disabled", "false"}:
+        return None
+    return {"type": value}
+
+
+def _realtime_reasoning() -> dict[str, str] | None:
+    effort = (settings.OPENAI_REALTIME_REASONING_EFFORT or "").strip().lower()
+    if not effort or effort in {"none", "off", "disabled", "false"}:
+        return None
+    return {"effort": effort}
+
+
+def _safety_identifier_for_user(user_id: str | None) -> str | None:
+    if not user_id:
+        return None
+    secret = settings.JWT_SECRET_KEY.strip().encode("utf-8")
+    return hmac.new(secret, user_id.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def _realtime_session_config_for_log(session: dict[str, Any]) -> dict[str, Any]:
@@ -119,6 +163,7 @@ def _realtime_session_config_for_log(session: dict[str, Any]) -> dict[str, Any]:
             "output": audio.get("output") if isinstance(audio, dict) else None,
         },
         "tool_choice": session.get("tool_choice"),
+        "reasoning": session.get("reasoning"),
     }
 
 
@@ -162,6 +207,7 @@ def parse_mint_response(
         openai_session_id=sid,
         client_secret=RealtimeClientSecret(value=val, expires_at=int(exp)),
         model=use_model,
+        voice_instructions=_voice_instructions(chat_session_id),
     )
 
 
@@ -171,33 +217,47 @@ def build_session_payload(chat_session_id: str) -> dict[str, Any]:
     The GA Realtime session schema nests audio and VAD options below ``session``.
     ``output_modalities=["audio"]`` still emits an audio transcript on the data channel.
     """
-    return {
-        "session": {
-            "type": "realtime",
-            "model": settings.OPENAI_REALTIME_MODEL,
-            "output_modalities": ["audio"],
-            "instructions": _voice_instructions(chat_session_id),
-            "audio": {
-                "input": {
-                    "format": {"type": "audio/pcm", "rate": 24000},
-                    "transcription": {"model": "whisper-1"},
-                    "turn_detection": dict(_EXPECTED_REALTIME_TURN_DETECTION),
-                },
-                "output": {
-                    "format": {"type": "audio/pcm", "rate": 24000},
-                    "voice": settings.OPENAI_REALTIME_VOICE,
-                },
+    audio_input: dict[str, Any] = {
+        "format": {"type": "audio/pcm", "rate": 24000},
+        "transcription": {"model": settings.OPENAI_REALTIME_TRANSCRIPTION_MODEL},
+        "turn_detection": _realtime_turn_detection(),
+    }
+    noise_reduction = _realtime_noise_reduction()
+    if noise_reduction is not None:
+        audio_input["noise_reduction"] = noise_reduction
+
+    session: dict[str, Any] = {
+        "type": "realtime",
+        "model": settings.OPENAI_REALTIME_MODEL,
+        "output_modalities": ["audio"],
+        "instructions": _voice_instructions(chat_session_id),
+        "audio": {
+            "input": audio_input,
+            "output": {
+                "format": {"type": "audio/pcm", "rate": 24000},
+                "voice": settings.OPENAI_REALTIME_VOICE,
             },
-            "tools": [LOOKUP_DOCUMENTATION_TOOL],
-            "tool_choice": "auto",
-            "max_output_tokens": _coerce_max_output_tokens(
-                settings.OPENAI_REALTIME_MAX_OUTPUT_TOKENS,
-            ),
         },
+        "tools": [LOOKUP_DOCUMENTATION_TOOL],
+        "tool_choice": "auto",
+        "max_output_tokens": _coerce_max_output_tokens(
+            settings.OPENAI_REALTIME_MAX_OUTPUT_TOKENS,
+        ),
+    }
+    reasoning = _realtime_reasoning()
+    if reasoning is not None:
+        session["reasoning"] = reasoning
+
+    return {
+        "session": session,
     }
 
 
-async def mint_openai_realtime_session(*, chat_session_id: str) -> RealtimeSessionMintResponse:
+async def mint_openai_realtime_session(
+    *,
+    chat_session_id: str,
+    user_id: str | None = None,
+) -> RealtimeSessionMintResponse:
     """Create an ephemeral Realtime client secret via ``POST /v1/realtime/client_secrets``.
 
     Transient OpenAI errors (502/503/504) and network failures are retried with
@@ -220,6 +280,9 @@ async def mint_openai_realtime_session(*, chat_session_id: str) -> RealtimeSessi
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
+    safety_identifier = _safety_identifier_for_user(user_id)
+    if safety_identifier is not None:
+        headers["OpenAI-Safety-Identifier"] = safety_identifier
     timeout = httpx.Timeout(settings.OPENAI_REALTIME_REQUEST_TIMEOUT_SECONDS)
     logger.info(
         "chat.realtime.session.mint_request",
@@ -230,10 +293,15 @@ async def mint_openai_realtime_session(*, chat_session_id: str) -> RealtimeSessi
             "output_modalities": session["output_modalities"],
             "max_output_tokens": session["max_output_tokens"],
             "vad_type": turn_detection["type"],
-            "vad_interrupt_response": turn_detection["interrupt_response"],
-            "vad_threshold": turn_detection["threshold"],
-            "vad_prefix_padding_ms": turn_detection["prefix_padding_ms"],
-            "vad_silence_ms": turn_detection["silence_duration_ms"],
+            "vad_interrupt_response": turn_detection.get("interrupt_response"),
+            "vad_create_response": turn_detection.get("create_response"),
+            "vad_threshold": turn_detection.get("threshold"),
+            "vad_prefix_padding_ms": turn_detection.get("prefix_padding_ms"),
+            "vad_silence_ms": turn_detection.get("silence_duration_ms"),
+            "reasoning_effort": session.get("reasoning", {}).get("effort"),
+            "transcription_model": audio["input"].get("transcription", {}).get("model"),
+            "noise_reduction": audio["input"].get("noise_reduction"),
+            "has_safety_identifier": safety_identifier is not None,
         },
     )
 
@@ -273,13 +341,14 @@ async def mint_openai_realtime_session(*, chat_session_id: str) -> RealtimeSessi
         if response.is_success:
             parsed = parse_mint_response(body, chat_session_id=chat_session_id)
             returned_turn_detection = _returned_turn_detection(body)
-            if returned_turn_detection != _EXPECTED_REALTIME_TURN_DETECTION:
+            expected_turn_detection = _realtime_turn_detection()
+            if returned_turn_detection != expected_turn_detection:
                 logger.warning(
                     "chat.realtime.session.minted_vad_mismatch",
                     extra={
                         "chat_session_id": chat_session_id,
                         "openai_session_id": parsed.openai_session_id,
-                        "requested_turn_detection": _EXPECTED_REALTIME_TURN_DETECTION,
+                        "requested_turn_detection": expected_turn_detection,
                         "returned_turn_detection": returned_turn_detection,
                         "returned_session_config": _realtime_session_config_for_log(
                             body.get("session", {}),
@@ -294,7 +363,7 @@ async def mint_openai_realtime_session(*, chat_session_id: str) -> RealtimeSessi
                     "model": parsed.model,
                     "client_secret_expires_at": parsed.client_secret.expires_at,
                     "attempts_used": attempt + 1,
-                    "requested_turn_detection": _EXPECTED_REALTIME_TURN_DETECTION,
+                    "requested_turn_detection": expected_turn_detection,
                     "returned_turn_detection": returned_turn_detection,
                     "returned_interrupt_response": (
                         returned_turn_detection.get("interrupt_response")
@@ -316,7 +385,7 @@ async def mint_openai_realtime_session(*, chat_session_id: str) -> RealtimeSessi
                 "attempt": attempt + 1,
                 "of_attempts": max_retries + 1,
                 "transient": is_transient,
-                "requested_turn_detection": _EXPECTED_REALTIME_TURN_DETECTION,
+                "requested_turn_detection": _realtime_turn_detection(),
                 "returned_session_config": (
                     _realtime_session_config_for_log(body["session"])
                     if isinstance(body.get("session"), dict)

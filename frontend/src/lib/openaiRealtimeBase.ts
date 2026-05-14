@@ -11,12 +11,8 @@ export function getOpenAiRealtimeHttpBase(): string {
 }
 
 /**
- * Ephemeral keys from `POST /v1/realtime/sessions` are the “beta” shape. OpenAI rejects them
- * against the GA WebRTC endpoint `POST /v1/realtime/calls` (400 API version mismatch).
- * Use `POST /v1/realtime?model=…` for that handshake instead.
- *
- * If you mint GA `client_secrets` and need the unified interface, set
- * `VITE_OPENAI_REALTIME_WEBRTC_HANDSHAKE=calls` to use `/v1/realtime/calls` (no model query).
+ * GA `client_secrets` connect through `/v1/realtime/calls`. The legacy
+ * `/v1/realtime?model=...` SDP path is available only by explicit opt-in.
  */
 export function openAiRealtimeWebRtcSdpUrl(model: string): string {
   const base = getOpenAiRealtimeHttpBase();
@@ -24,9 +20,9 @@ export function openAiRealtimeWebRtcSdpUrl(model: string): string {
     typeof import.meta.env.VITE_OPENAI_REALTIME_WEBRTC_HANDSHAKE === 'string'
       ? import.meta.env.VITE_OPENAI_REALTIME_WEBRTC_HANDSHAKE.trim().toLowerCase()
       : '';
-  if (handshake === 'calls') {
+  if (handshake !== 'realtime') {
     return `${base}/realtime/calls`;
   }
-  const m = model.trim() || 'gpt-4o-realtime-preview';
+  const m = model.trim() || 'gpt-realtime-2';
   return `${base}/realtime?model=${encodeURIComponent(m)}`;
 }

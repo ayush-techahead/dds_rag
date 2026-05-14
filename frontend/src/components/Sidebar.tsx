@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Loader2, MessageSquare, RefreshCw, Trash2, User } from 'lucide-react';
 import { deleteChatSession } from '../api/deleteChatSession';
 import { apiUrl } from '../lib/apiBase';
+import { formatLocalDateTime } from '../lib/dateTime';
 import './Sidebar.css';
 
 /** Row from GET /api/v1/chat/sessions */
@@ -163,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="session-info">
                 <span className="session-title">{session.title || 'New Session'}</span>
                 <span className="session-date">
-                  {new Date(session.updated_at).toLocaleString(undefined, {
+                  {formatLocalDateTime(session.updated_at, {
                     month: 'short',
                     day: 'numeric',
                     hour: '2-digit',

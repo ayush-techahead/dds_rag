@@ -5,7 +5,11 @@ import { fetchCurrentUser } from './api/users';
 import { getApiBaseUrl } from './lib/apiBase';
 import { useChatStream, type Message } from './hooks/useChatStream';
 import { useVoiceRealtime } from './hooks/useVoiceRealtime';
-import { mergeVoiceCommitMessages, reduceVoiceThreadEvent } from './voiceChatMerge';
+import {
+  cleanupVoiceMessagesAfterStop,
+  mergeVoiceCommitMessages,
+  reduceVoiceThreadEvent,
+} from './voiceChatMerge';
 import { ChatInput } from './components/ChatInput';
 import { ChatMessage } from './components/ChatMessage';
 import { Login } from './components/Login';
@@ -39,10 +43,40 @@ async function pollSessionTitleAfterVoiceCommit(
   }
 }
 
+async function getVoicePreflightError(): Promise<string | null> {
+  if (typeof window !== 'undefined' && !window.isSecureContext) {
+    return 'Voice chat needs a secure browser context. Use HTTPS or localhost, then try again.';
+  }
+  if (
+    typeof navigator === 'undefined' ||
+    !navigator.mediaDevices ||
+    typeof navigator.mediaDevices.getUserMedia !== 'function'
+  ) {
+    return 'This browser does not support microphone capture for voice chat.';
+  }
+
+  try {
+    const permission = await navigator.permissions?.query({
+      name: 'microphone' as PermissionName,
+    });
+    if (permission?.state === 'denied') {
+      return 'Microphone access is blocked. Allow mic access in your browser settings, then start voice again.';
+    }
+  } catch {
+    /* Browser does not expose microphone permission status before prompting. */
+  }
+
+  return null;
+}
+
 function App() {
   const { messages, status, loadingText, sendMessage, options, setMessages, setStatus } = useChatStream();
   const {
     connectionState: voiceConnectionState,
+    phase: voicePhase,
+    captionUser: voiceCaptionUser,
+    captionAssistant: voiceCaptionAssistant,
+    voiceInputReadyNonce,
     errorMessage: voiceError,
     commitErrorMessage: voiceCommitError,
     connect: voiceConnect,
@@ -69,9 +103,13 @@ function App() {
   const [activeSessionTitle, setActiveSessionTitle] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [refreshSidebar, setRefreshSidebar] = useState(0);
+  const [voiceStartError, setVoiceStartError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   /** Avoid polling GET /sessions for async title on every voice turn (§7.4). */
   const voiceTitlePollSessionRef = useRef<string | null>(null);
+  const activeSessionIdRef = useRef<string | null>(activeSessionId);
+  const combinedVoiceError = voiceStartError ?? voiceError;
+  const voiceActive = voiceConnectionState === 'live' || voiceConnectionState === 'connecting';
 
   const applyServerSessionTitle = useCallback((title: string) => {
     setActiveSessionTitle(title);
@@ -87,23 +125,36 @@ function App() {
   }, [messages, status, voiceConnectionState]);
 
   useEffect(() => {
+    activeSessionIdRef.current = activeSessionId;
+  }, [activeSessionId]);
+
+  useEffect(() => {
     return () => {
-      voiceDisconnect();
+      voiceDisconnect('app_unmount');
     };
   }, [voiceDisconnect]);
 
   const handleVoiceStart = useCallback(async () => {
     if (!authToken) return;
+    setVoiceStartError(null);
+    const preflightError = await getVoicePreflightError();
+    if (preflightError) {
+      setVoiceStartError(preflightError);
+      return;
+    }
+
     let sessionId = activeSessionId;
     if (!sessionId) {
       try {
         const session = await createChatSession(authToken);
         sessionId = session.id;
         setActiveSessionId(session.id);
+        activeSessionIdRef.current = session.id;
         setActiveSessionTitle(session.title ?? 'New Session');
         setRefreshSidebar((prev) => prev + 1);
       } catch (e) {
         console.error('[App] Voice: failed to create session', e);
+        setVoiceStartError('Could not create a chat session for voice. Please try again.');
         return;
       }
     }
@@ -113,8 +164,11 @@ function App() {
         onVoiceThreadEvent: (ev) => {
           setMessages((prev) => reduceVoiceThreadEvent(prev, ev));
         },
-        onTurnCommitted: ({ messages: committed, sessionTitle, chatSessionId }) => {
-          setMessages((prev) => mergeVoiceCommitMessages(prev, committed));
+        onTurnCommitted: ({ messages: committed, sessionTitle, chatSessionId, clientTurnId }) => {
+          if (activeSessionIdRef.current !== chatSessionId) {
+            return;
+          }
+          setMessages((prev) => mergeVoiceCommitMessages(prev, committed, clientTurnId));
           if (sessionTitle && sessionTitle.trim().length > 0) {
             applyServerSessionTitle(sessionTitle.trim());
             voiceTitlePollSessionRef.current = chatSessionId;
@@ -127,6 +181,7 @@ function App() {
       });
     } catch (e) {
       console.error('[App] Voice connect failed:', e);
+      setVoiceStartError(e instanceof Error ? e.message : 'Voice connection failed. Please try again.');
     }
   }, [
     activeSessionId,
@@ -137,14 +192,16 @@ function App() {
   ]);
 
   const handleVoiceStop = useCallback(() => {
-    voiceDisconnect();
-    setMessages((prev) => prev.filter((m) => !m.optimisticVoice));
-  }, [voiceDisconnect, setMessages]);
+    setVoiceStartError(null);
+    voiceDisconnect('user_stop');
+    setMessages((prev) => cleanupVoiceMessagesAfterStop(prev));
+  }, [setMessages, voiceDisconnect]);
 
   const handleSessionDeleted = useCallback(
     (sessionId: string) => {
       if (activeSessionId === sessionId) {
-        voiceDisconnect();
+        voiceDisconnect('session_deleted');
+        setVoiceStartError(null);
         setActiveSessionId(null);
         setActiveSessionTitle('New Session');
         setMessages([]);
@@ -195,7 +252,8 @@ function App() {
   const handleSelectSession = async (session: Session) => {
     if (session.id === activeSessionId) return;
 
-    voiceDisconnect();
+    voiceDisconnect('session_selected');
+    setVoiceStartError(null);
     setActiveSessionId(session.id);
     setActiveSessionTitle(session.title ?? 'Session');
     localStorage.setItem(CHAT_SESSION_ID_STORAGE_KEY, session.id);
@@ -237,7 +295,7 @@ function App() {
   };
 
   const handleNewChat = () => {
-    voiceDisconnect();
+    voiceDisconnect('new_chat');
     voiceTitlePollSessionRef.current = null;
     setActiveSessionId(null);
     setActiveSessionTitle('New Session');
@@ -248,7 +306,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    voiceDisconnect();
+    voiceDisconnect('logout');
     setAuthToken(null);
     setUser(null);
     setActiveSessionId(null);
@@ -310,139 +368,170 @@ function App() {
           </div>
         </header>
 
-        <main className="chat-area">
-          <div className="chat-content-width">
-            {messages.length === 0 && (
-              <div className="welcome-container">
-                <MessageSquare size={48} className="welcome-icon" />
-                <div className="welcome-text">
-                  <h2>Welcome to DDS Demo Bot</h2>
-                  <p>Start a conversation to know more about DDS and related services.</p>
-                </div>
+        <main className={`chat-area ${voiceActive ? 'chat-area-voice-mode' : ''}`}>
+          {voiceActive ? (
+            <section className="voice-mode-screen" aria-label="Active voice chat">
+              <div className="voice-mode-intro">
+                <span className="voice-mode-kicker">Voice chat</span>
+                <h2>{activeSessionTitle ?? 'DDS Demo Bot'}</h2>
+                <p>Your chat history is hidden while voice is live. End the session to return to the transcript.</p>
               </div>
-            )}
-
-            {messages.map((msg, index) => (
-              <ChatMessage
-                key={msg.serverMessageId ?? `local-${index}`}
-                role={msg.role}
-                content={msg.content}
-                source={msg.source}
-                isStreaming={
-                  (voiceConnectionState === 'live' && Boolean(msg.voiceUserStreaming)) ||
-                  (voiceConnectionState === 'live' &&
-                    msg.role === 'bot' &&
-                    Boolean(msg.voiceAssistantStreaming)) ||
-                  (index === messages.length - 1 && (status === 'streaming' || status === 'loading'))
-                }
-                loadingText={
-                  index === messages.length - 1 && (status === 'loading' || status === 'streaming')
-                    ? loadingText
-                    : null
-                }
-                options={index === messages.length - 1 ? options || undefined : undefined}
-                onOptionClick={(opt) =>
-                  void sendMessage(
-                    opt,
-                    activeSessionId === null,
-                    authToken,
-                    activeSessionId,
-                    undefined,
-                    applyServerSessionTitle
-                  )
-                }
-              />
-            ))}
-
-            {status === 'error' && (
-              <div className="flex justify-center p-4">
-                <div
-                  style={{
-                    color: '#ef4444',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    backgroundColor: 'rgba(239,68,68,0.1)',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '0.5rem',
-                  }}
-                >
-                  <AlertTriangle size={16} />
-                  <span>Connection failed. Please check backend is running on {getApiBaseUrl()}.</span>
-                </div>
-              </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-        </main>
-
-        <footer className="input-area">
-          <div className="input-area-composer">
-            <div className="input-area-voice-slot">
               <VoiceModeControls
                 connectionState={voiceConnectionState}
-                errorMessage={voiceError}
+                phase={voicePhase}
+                captionUser={voiceCaptionUser}
+                captionAssistant={voiceCaptionAssistant}
+                voiceInputReadyNonce={voiceInputReadyNonce}
+                errorMessage={combinedVoiceError}
                 commitErrorMessage={voiceCommitError}
                 assistantPlaybackBlockingMic={assistantPlaybackBlockingMic}
                 disabled={status === 'loading' || status === 'streaming'}
+                layout="full"
+                transcriptMessages={messages
+                  .filter((m) => m.source === 'voice' || m.optimisticVoice)
+                  .map((m) => ({
+                    role: m.role,
+                    content: m.content,
+                    isStreaming: Boolean(m.voiceUserStreaming || m.voiceAssistantStreaming),
+                  }))}
                 onStart={() => void handleVoiceStart()}
                 onStop={handleVoiceStop}
               />
-            </div>
-            <div className="input-area-text-slot">
-              <ChatInput
-                onSend={async (msg) => {
-                  const isNewChat = activeSessionId === null;
-                  let sessionId = activeSessionId;
+            </section>
+          ) : (
+            <div className="chat-content-width">
+              {messages.length === 0 && (
+                <div className="welcome-container">
+                  <MessageSquare size={48} className="welcome-icon" />
+                  <div className="welcome-text">
+                    <h2>Welcome to DDS Demo Bot</h2>
+                    <p>Start a conversation to know more about DDS and related services.</p>
+                  </div>
+                </div>
+              )}
 
-                  if (isNewChat) {
-                    try {
-                      const session = await createChatSession(authToken);
-                      sessionId = session.id;
-                      setActiveSessionId(session.id);
-                      setActiveSessionTitle(session.title ?? 'New Session');
-                      setRefreshSidebar((prev) => prev + 1);
-                    } catch (e) {
-                      console.error('[App] Failed to create session for new chat:', e);
-                      setStatus('error');
-                      return;
-                    }
+              {messages.map((msg, index) => (
+                <ChatMessage
+                  key={msg.serverMessageId ?? `local-${index}`}
+                  role={msg.role}
+                  content={msg.content}
+                  source={msg.source}
+                  isStreaming={
+                    (index === messages.length - 1 && (status === 'streaming' || status === 'loading'))
                   }
+                  loadingText={
+                    index === messages.length - 1 && (status === 'loading' || status === 'streaming')
+                      ? loadingText
+                      : null
+                  }
+                  options={index === messages.length - 1 ? options || undefined : undefined}
+                  onOptionClick={(opt) =>
+                    void sendMessage(
+                      opt,
+                      activeSessionId === null,
+                      authToken,
+                      activeSessionId,
+                      undefined,
+                      applyServerSessionTitle
+                    )
+                  }
+                />
+              ))}
 
-                  await sendMessage(
-                    msg,
-                    isNewChat,
-                    authToken,
-                    sessionId,
-                    () => {
-                      if (isNewChat) {
-                        setRefreshSidebar((prev) => prev + 1);
-                      }
-                    },
-                    applyServerSessionTitle
-                  );
-                }}
-                disabled={
-                  status === 'loading' ||
-                  status === 'streaming' ||
-                  voiceConnectionState === 'live' ||
-                  voiceConnectionState === 'connecting'
-                }
-              />
+              {status === 'error' && (
+                <div className="flex justify-center p-4">
+                  <div
+                    style={{
+                      color: '#ef4444',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      backgroundColor: 'rgba(239,68,68,0.1)',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '0.5rem',
+                    }}
+                  >
+                    <AlertTriangle size={16} />
+                    <span>Connection failed. Please check backend is running on {getApiBaseUrl()}.</span>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
             </div>
-          </div>
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '0.5rem',
-              color: 'var(--color-text-muted)',
-              fontSize: '0.75rem',
-            }}
-          >
-            DDS Demo Bot can make mistakes. Consider checking important information.
-          </div>
-        </footer>
+          )}
+        </main>
+
+        {!voiceActive && (
+          <footer className="input-area">
+            <div className="input-area-composer">
+              <div className="input-area-voice-slot">
+                <VoiceModeControls
+                  connectionState={voiceConnectionState}
+                  phase={voicePhase}
+                  captionUser={voiceCaptionUser}
+                  captionAssistant={voiceCaptionAssistant}
+                  voiceInputReadyNonce={voiceInputReadyNonce}
+                  errorMessage={combinedVoiceError}
+                  commitErrorMessage={voiceCommitError}
+                  assistantPlaybackBlockingMic={assistantPlaybackBlockingMic}
+                  disabled={status === 'loading' || status === 'streaming'}
+                  onStart={() => void handleVoiceStart()}
+                  onStop={handleVoiceStop}
+                />
+              </div>
+              <div className="input-area-text-slot">
+                <ChatInput
+                  onSend={async (msg) => {
+                    const isNewChat = activeSessionId === null;
+                    let sessionId = activeSessionId;
+
+                    if (isNewChat) {
+                      try {
+                        const session = await createChatSession(authToken);
+                        sessionId = session.id;
+                        setActiveSessionId(session.id);
+                        setActiveSessionTitle(session.title ?? 'New Session');
+                        setRefreshSidebar((prev) => prev + 1);
+                      } catch (e) {
+                        console.error('[App] Failed to create session for new chat:', e);
+                        setStatus('error');
+                        return;
+                      }
+                    }
+
+                    await sendMessage(
+                      msg,
+                      isNewChat,
+                      authToken,
+                      sessionId,
+                      () => {
+                        if (isNewChat) {
+                          setRefreshSidebar((prev) => prev + 1);
+                        }
+                      },
+                      applyServerSessionTitle
+                    );
+                  }}
+                  disabled={
+                    status === 'loading' ||
+                    status === 'streaming'
+                  }
+                />
+              </div>
+            </div>
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '0.5rem',
+                color: 'var(--color-text-muted)',
+                fontSize: '0.75rem',
+              }}
+            >
+              DDS Demo Bot can make mistakes. Consider checking important information.
+            </div>
+          </footer>
+        )}
       </div>
     </div>
   );

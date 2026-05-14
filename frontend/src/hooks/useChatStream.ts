@@ -15,8 +15,12 @@ export type Message = {
     options?: string[];
     /** Local-only rows updated during OpenAI Realtime; removed when POST …/voice/commit succeeds */
     optimisticVoice?: boolean;
+    /** Stable id for one local voice turn, used to reconcile commit responses without touching other turns */
+    voiceClientTurnId?: string;
     /** Bot row: correlates `response.output_audio_transcript.*` to this bubble */
     voiceResponseId?: string;
+    /** Bot row: cumulative transcript text per OpenAI response in the same voice turn */
+    voiceAssistantResponseTexts?: Record<string, string>;
     /** User: correlates input-audio transcription deltas to this bubble */
     voiceItemId?: string;
     /** Bot: show streaming cursor until transcript `done` */

@@ -28,6 +28,25 @@ def bypass_chat_router(monkeypatch):
     )
 
 
+def _force_realtime2_defaults(monkeypatch) -> None:
+    overrides = {
+        "OPENAI_REALTIME_MODEL": "gpt-realtime-2",
+        "OPENAI_REALTIME_VOICE": "marin",
+        "OPENAI_REALTIME_REASONING_EFFORT": "low",
+        "OPENAI_REALTIME_TRANSCRIPTION_MODEL": "gpt-4o-mini-transcribe",
+        "OPENAI_REALTIME_NOISE_REDUCTION": "near_field",
+        "OPENAI_REALTIME_VAD_TYPE": "semantic_vad",
+        "OPENAI_REALTIME_VAD_INTERRUPT_RESPONSE": False,
+        "OPENAI_REALTIME_VAD_CREATE_RESPONSE": True,
+    }
+    for key, value in overrides.items():
+        monkeypatch.setattr(
+            f"app.modules.chat.realtime_session.settings.{key}",
+            value,
+            raising=False,
+        )
+
+
 async def test_send_message_returns_llm_reply(
     client: AsyncClient,
     monkeypatch,
@@ -281,12 +300,18 @@ async def test_realtime_session_mint_returns_ephemeral_payload(
     monkeypatch,
     bypass_chat_router,
 ) -> None:
-    async def fake_mint(*, chat_session_id: str) -> RealtimeSessionMintResponse:
+    async def fake_mint(
+        *,
+        chat_session_id: str,
+        user_id: str | None = None,
+    ) -> RealtimeSessionMintResponse:
+        assert user_id
         return RealtimeSessionMintResponse(
             chat_session_id=chat_session_id,
             openai_session_id="sess_fake",
             client_secret=RealtimeClientSecret(value="ek_fake", expires_at=2000000000),
-            model="gpt-realtime",
+            model="gpt-realtime-2",
+            voice_instructions="Use DDS documentation before answering.",
         )
 
     monkeypatch.setattr(
@@ -323,7 +348,8 @@ async def test_realtime_session_mint_returns_ephemeral_payload(
     assert data["openai_session_id"] == "sess_fake"
     assert data["client_secret"]["value"] == "ek_fake"
     assert data["client_secret"]["expires_at"] == 2000000000
-    assert data["model"] == "gpt-realtime"
+    assert data["model"] == "gpt-realtime-2"
+    assert data["voice_instructions"] == "Use DDS documentation before answering."
 
 
 async def test_realtime_lookup_documentation_tool(
@@ -711,8 +737,9 @@ async def test_voice_commit_rejects_overlong_transcript(
     assert any("user_transcript" in (err.get("loc") or []) for err in body["errors"])
 
 
-def test_realtime_session_payload_includes_response_token_budget_and_vad() -> None:
+def test_realtime_session_payload_includes_response_token_budget_and_vad(monkeypatch) -> None:
     """Without these knobs Realtime cuts audio off mid-sentence; this guards regressions."""
+    _force_realtime2_defaults(monkeypatch)
     payload = build_session_payload("507f1f77bcf86cd799439011")
     session = payload["session"]
     audio = session["audio"]
@@ -723,23 +750,32 @@ def test_realtime_session_payload_includes_response_token_budget_and_vad() -> No
 
     assert session["max_output_tokens"] in {"inf", *range(1, 4097)}
 
+    assert session["model"] == "gpt-realtime-2"
+    assert session["reasoning"] == {"effort": "low"}
+    assert audio["input"]["transcription"] == {"model": "gpt-4o-mini-transcribe"}
+    assert audio["input"]["noise_reduction"] == {"type": "near_field"}
+    assert audio["output"]["voice"] == "marin"
+
     vad = audio["input"]["turn_detection"]
     assert vad == {
-        "type": "server_vad",
+        "type": "semantic_vad",
         "interrupt_response": False,
-        "threshold": 0.78,
-        "prefix_padding_ms": 350,
-        "silence_duration_ms": 650,
+        "create_response": True,
     }
 
     instructions = session["instructions"]
-    assert "Use the same answer structure as text chat" in instructions
-    assert "## Where to learn more" in instructions
+    assert "Answer directly in natural spoken language" in instructions
+    assert "Do not narrate the tool call" in instructions
+    assert "Start with the answer, not a process update" in instructions
     assert "Use only actual DDS website URLs" in instructions
-    assert "user would like links to DDS resources or any other information" in instructions
-    assert "put them only in the final ## Where to learn more section" in instructions
+    assert "Do not use Markdown section headings in voice" in instructions
+    assert "Ask one focused follow-up question" in instructions
+    assert "Tool policy" in instructions
+    assert "call lookup_documentation before answering" in instructions
+    assert "Do not call lookup_documentation repeatedly with the same query" in instructions
+    assert "## Where to learn more" not in instructions
+    assert "user would like links to DDS resources or any other information" not in instructions
     assert "Document/filename" not in instructions
-    assert "do not use Markdown section headings" not in instructions
     assert "Briefly cite" not in instructions
 
     tools = session["tools"]
@@ -752,6 +788,7 @@ async def test_realtime_session_mint_sends_token_budget_to_openai(
     bypass_chat_router,
 ) -> None:
     """End-to-end: minting the session POSTs `max_output_tokens` to OpenAI."""
+    _force_realtime2_defaults(monkeypatch)
     captured: dict[str, object] = {}
 
     class FakeResponse:
@@ -764,18 +801,16 @@ async def test_realtime_session_mint_sends_token_budget_to_openai(
                 "expires_at": 2000000000,
                 "session": {
                     "id": "sess_fake",
-                    "model": "gpt-realtime",
+                    "model": "gpt-realtime-2",
                     "audio": {
                         "input": {
                             "turn_detection": {
-                                "type": "server_vad",
+                                "type": "semantic_vad",
                                 "interrupt_response": False,
-                                "threshold": 0.78,
-                                "prefix_padding_ms": 350,
-                                "silence_duration_ms": 650,
+                                "create_response": True,
                             }
                         },
-                        "output": {"voice": "alloy"},
+                        "output": {"voice": "marin"},
                     },
                 },
             }
@@ -823,7 +858,14 @@ async def test_realtime_session_mint_sends_token_budget_to_openai(
     url = captured["url"]
     assert isinstance(url, str)
     assert url.endswith("/realtime/client_secrets")
+    headers_sent = captured["headers"]
+    assert isinstance(headers_sent, dict)
+    safety_identifier = headers_sent.get("OpenAI-Safety-Identifier")
+    assert isinstance(safety_identifier, str)
+    assert len(safety_identifier) == 64
     assert "max_output_tokens" in session
+    assert session["model"] == "gpt-realtime-2"
+    assert session["reasoning"] == {"effort": "low"}
     assert session["output_modalities"] == ["audio"]
     audio = session["audio"]
     assert isinstance(audio, dict)
@@ -832,18 +874,21 @@ async def test_realtime_session_mint_sends_token_budget_to_openai(
     vad = audio_input["turn_detection"]
     assert isinstance(vad, dict)
     assert vad == {
-        "type": "server_vad",
+        "type": "semantic_vad",
         "interrupt_response": False,
-        "threshold": 0.78,
-        "prefix_padding_ms": 350,
-        "silence_duration_ms": 650,
+        "create_response": True,
     }
+    assert audio_input["transcription"] == {"model": "gpt-4o-mini-transcribe"}
+    assert audio_input["noise_reduction"] == {"type": "near_field"}
+    assert audio["output"]["voice"] == "marin"
 
 
 async def test_realtime_session_mint_logs_openai_vad_normalization(
     monkeypatch,
     caplog,
 ) -> None:
+    _force_realtime2_defaults(monkeypatch)
+
     class FakeResponse:
         status_code = 200
         is_success = True
@@ -854,18 +899,19 @@ async def test_realtime_session_mint_logs_openai_vad_normalization(
                 "expires_at": 2000000000,
                 "session": {
                     "id": "sess_normalized",
-                    "model": "gpt-realtime",
+                    "model": "gpt-realtime-2",
                     "audio": {
                         "input": {
                             "turn_detection": {
                                 "type": "server_vad",
                                 "interrupt_response": True,
+                                "create_response": True,
                                 "threshold": 0.5,
                                 "prefix_padding_ms": 300,
                                 "silence_duration_ms": 600,
                             }
                         },
-                        "output": {"voice": "alloy"},
+                        "output": {"voice": "marin"},
                     },
                 },
             }
@@ -900,6 +946,7 @@ async def test_realtime_session_mint_logs_openai_vad_normalization(
         r for r in caplog.records if r.message == "chat.realtime.session.minted_vad_mismatch"
     ]
     assert mismatch_records
+    assert mismatch_records[0].requested_turn_detection["type"] == "semantic_vad"
     assert mismatch_records[0].returned_turn_detection["interrupt_response"] is True
     assert mismatch_records[0].returned_session_config["audio"]["input"]["turn_detection"][
         "interrupt_response"
@@ -1029,7 +1076,7 @@ async def test_realtime_session_mint_retries_transient_then_succeeds(
                     "expires_at": 2000000000,
                     "session": {
                         "id": "sess_ok",
-                        "model": "gpt-realtime",
+                        "model": "gpt-realtime-2",
                     },
                 },
             )
@@ -1117,12 +1164,17 @@ async def test_mint_rate_limit_returns_429(
 ) -> None:
     """Once the user crosses the configured per-window limit, mint returns 429."""
 
-    async def fake_mint(*, chat_session_id: str) -> RealtimeSessionMintResponse:
+    async def fake_mint(
+        *,
+        chat_session_id: str,
+        user_id: str | None = None,
+    ) -> RealtimeSessionMintResponse:
+        assert user_id
         return RealtimeSessionMintResponse(
             chat_session_id=chat_session_id,
             openai_session_id="sess_rl",
             client_secret=RealtimeClientSecret(value="ek", expires_at=2000000000),
-            model="gpt-realtime",
+            model="gpt-realtime-2",
         )
 
     monkeypatch.setattr("app.api.v1.endpoints.chat.mint_openai_realtime_session", fake_mint)
@@ -1164,12 +1216,17 @@ async def test_voice_audit_rows_record_mint_and_commit(
 ) -> None:
     """Mint + commit each write an audit row that survives the request."""
 
-    async def fake_mint(*, chat_session_id: str) -> RealtimeSessionMintResponse:
+    async def fake_mint(
+        *,
+        chat_session_id: str,
+        user_id: str | None = None,
+    ) -> RealtimeSessionMintResponse:
+        assert user_id
         return RealtimeSessionMintResponse(
             chat_session_id=chat_session_id,
             openai_session_id="sess_audit",
             client_secret=RealtimeClientSecret(value="ek", expires_at=2000000000),
-            model="gpt-realtime",
+            model="gpt-realtime-2",
         )
 
     monkeypatch.setattr("app.api.v1.endpoints.chat.mint_openai_realtime_session", fake_mint)
